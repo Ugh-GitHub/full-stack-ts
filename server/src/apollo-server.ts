@@ -11,8 +11,10 @@ import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
 import { loadSchemaSync } from "@graphql-tools/load"
 import { addResolversToSchema } from "@graphql-tools/schema"
 import { GRAPHQL_SCHEMA_PATH } from "./constants"
-import resolvers from "./resolvers"
-
+import {
+    createResolvers,
+    TwitterResolverContext,
+} from "./resolvers"
 
 
 export async function createApolloServer(
@@ -20,57 +22,19 @@ export async function createApolloServer(
   httpServer: Server,
   app: express.Application
 ): Promise<ApolloServer<ExpressContext>> {
-//   const typeDefs = gql`
-//     type Query {
-//       currentUser: User!
-//       suggestions: [Suggestion!]!
-//     }
-//     type User {
-//       id: String!
-//       name: String!
-//       handle: String!
-//       coverUrl: String!
-//       avatarUrl: String!
-//       createdAt: String!
-//       updatedAt: String!
-//     }
-//     type Suggestion {
-//       name: String!
-//       handle: String!
-//       avatarUrl: String!
-//       reason: String!
-//     }
-//   `
 
     const SCHEMA = loadSchemaSync(GRAPHQL_SCHEMA_PATH, {
         loaders: [new GraphQLFileLoader()],
     })
 
-//   const resolvers = {
-//     Query: {
-//       currentUser: () => {
-//         return {
-//           id: "123",
-//           name: "John Doe",
-//           handle: "johndoe",
-//           coverUrl: "",
-//           avatarUrl: "",
-//           createdAt: "",
-//           updatedAt: "",
-//         }
-//       },
-//       suggestions: () => {
-//         return []
-//       },
-//     },
-//   }
+    const context: () => TwitterResolverContext = () => ({ db })
 
   const server = new ApolloServer({
     schema: addResolversToSchema({
         resolvers,
         schema: SCHEMA,
     }),
-    context: () => ({ db }),
+    context,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
     ],

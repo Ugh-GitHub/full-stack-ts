@@ -1,3 +1,4 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 import * as low from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import { v4 as uuid } from 'uuid';
@@ -254,6 +255,7 @@ class Db {
     if (!tweet) throw new Error('Tweet does not exist');
     const favorites = this.db.get('favorites');
     const favorite: DbFavorite = {
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
       ...favoriteProps,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
